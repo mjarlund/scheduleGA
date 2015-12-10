@@ -9,13 +9,11 @@
 
 void get_optimum(SCHEDULE **population, SCHEDULE *optimum) {
     // Sort by fitness score in descending order.
-    qsort(population, POP, sizeof(SCHEDULE), schedule_cmp_by_fitness);
+    qsort(population, POP, sizeof(SCHEDULE*), schedule_cmp_by_fitness);
 
     // Gets the highest scoring solution throughout the generations.
     if(population[0]->fitness > optimum->fitness) {
         *optimum = *population[0];
-    } else {
-        *population[POP-1] = *optimum;
     }
 
 }
@@ -24,7 +22,7 @@ void get_optimum(SCHEDULE **population, SCHEDULE *optimum) {
 int selection_roulette(SCHEDULE **population) {
     int total_sum = 0, partial_sum = 0, i, j, r;
 
-    qsort(population, POP, sizeof(SCHEDULE), schedule_cmp_by_fitness);
+    qsort(population, POP, sizeof(SCHEDULE*), schedule_cmp_by_fitness);
 
     // Get total sum of fitness values.
     for(i = 0; i < POP; i++) {
