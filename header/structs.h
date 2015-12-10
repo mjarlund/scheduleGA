@@ -16,7 +16,7 @@ typedef struct {
 } ROOM;
 
 typedef struct {
-    int         id;
+    int         id, student[50], num_students;
     char        name[10];
 } TEAM;
 
