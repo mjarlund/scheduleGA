@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "header/structs.h"
 #include "header/functions.h"
 
@@ -12,9 +13,9 @@ int NUM_ENTRIES;
 
 int buffer_array(FILE *inp) {
     int count = 0;
-    char str[BUFSIZ];
+    char temp[BUFSIZ];
 
-    while((fgets(str, BUFSIZ, inp)) != NULL) {
+    while((fgets(temp, BUFSIZ, inp)) != NULL) {
         count++;
     }
 
@@ -23,6 +24,7 @@ int buffer_array(FILE *inp) {
 
 PROFESSOR * professors() {
     int i = 0;
+    char tmp[sizeof(PROFESSOR)];
     FILE *inp;
 
     // Open filestream.
@@ -44,8 +46,9 @@ PROFESSOR * professors() {
     rewind(inp); 
 
     // Get values in filestream.
-    while(!feof(inp)) {
-        fscanf(inp, "%d;%s", &dest[i].id, dest[i].name);
+    while(fgets(tmp, sizeof(PROFESSOR), inp) != NULL) {
+
+        sscanf(tmp, "%d;%s", &dest[i].id, dest[i].name);
         i++;
     }
 
@@ -58,6 +61,7 @@ PROFESSOR * professors() {
 
 SUBJECT * subjects() {
     int i = 0;
+    char tmp[sizeof(SUBJECT)];
     FILE *inp;
 
     // Open filestream.
@@ -79,8 +83,9 @@ SUBJECT * subjects() {
     rewind(inp); 
 
     // Get values in filestream.
-    while(!feof(inp)) {
-        fscanf(inp, "%d;%d;%d;%s", &dest[i].id, &dest[i].type, &dest[i].hours, dest[i].name);
+    while(fgets(tmp, sizeof(SUBJECT), inp) != NULL) {
+        sscanf(tmp, "%d;%d;%d;%s", &dest[i].id, &dest[i].type, &dest[i].hours, dest[i].name);
+
         i++;
     }
 
@@ -93,6 +98,7 @@ SUBJECT * subjects() {
 
 ROOM * rooms() {
     int i = 0;
+    char tmp[sizeof(ROOM)];
     FILE *inp;
 
     // Open filestream.
@@ -114,8 +120,10 @@ ROOM * rooms() {
     rewind(inp); 
 
     // Get values in filestream.
-    while(!feof(inp)) {
-        fscanf(inp, "%d;%d", &dest[i].id, &dest[i].type);
+    while(fgets(tmp, sizeof(ROOM), inp) != NULL) {
+
+        sscanf(tmp, "%d;%d", &dest[i].id, &dest[i].type);
+
         i++;
     }
 
@@ -127,7 +135,10 @@ ROOM * rooms() {
 }
 
 TEAM * teams() {
-    int i = 0;
+    int i = 0, j, d;
+    char tmp[sizeof(TEAM)];
+    char *token;
+    char *buffer;
     FILE *inp;
 
     // Open filestream.
@@ -146,11 +157,36 @@ TEAM * teams() {
     }
 
     // Rewind the filestream back to first entry.
-    rewind(inp); 
+    rewind(inp);
 
     // Get values in filestream.
-    while(!feof(inp)) {
-        fscanf(inp, "%d;%s", &dest[i].id, dest[i].name);
+    while(fgets(tmp, sizeof(TEAM), inp) != NULL) {
+        /* get the first token */
+        token = strtok(tmp, ";");
+
+        dest[i].id = atoi(token);
+
+        token = strtok(NULL, ";");
+
+        strcpy(dest[i].name, token);
+
+        token = strtok(NULL, ";");
+
+        buffer = token;
+
+        token = strtok(buffer, ",");
+
+        j = 0;
+        /* walk through other tokens */
+        while( token != NULL ) 
+        {
+            dest[i].student[j] = atoi(token);
+            token = strtok(NULL, ",");
+            j++;
+        }
+
+        dest[i].num_students = j;
+
         i++;
     }
 
@@ -163,6 +199,7 @@ TEAM * teams() {
 
 COURSE * courses() {
     int i = 0, j, p, s, t, count = 0;
+    char tmp[sizeof(COURSE)];
     FILE *inp;
 
     // Open filestream.
@@ -192,8 +229,8 @@ COURSE * courses() {
     rewind(inp); 
 
     // Get values in filestream.
-    while(!feof(inp)) {
-        fscanf(inp, "%d;%d;%d;%d", &dest[i].id, &p, &s, &t);
+    while(fgets(tmp, sizeof(PROFESSOR), inp) != NULL) {
+        sscanf(tmp, "%d;%d;%d;%d", &dest[i].id, &p, &s, &t);
 
         // Get corresponding professor.
         for(j = 0; j < NUM_PROFESSORS; j++) {
@@ -222,6 +259,7 @@ COURSE * courses() {
 
         i++;
     }
+
 
     NUM_ENTRIES = count;
 
