@@ -1,21 +1,17 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "header/structs.h"
 #include "header/functions.h"
 
-void export(SCHEDULE *schedule) {
+void export(SCHEDULE *src) {
     FILE *out;
+    int i;
 
-    out = fopen("result/schedule.csv", "w");
+    out = fopen("result/result.csv", "w");
 
-    int i = 0;
-
-    while(i < NUM_ENTRIES) {
+    for(i = 0; i < NUM_ENTRIES; i++) {
         fprintf(out, "%d;%d;%s;%s;%s;%d;%d\n",
-            schedule->entry[i].day, schedule->entry[i].hour, schedule->entry[i].course.professor.name,
-            schedule->entry[i].course.subject.name, schedule->entry[i].course.team.name,
-            schedule->entry[i].room.id, schedule->entry[i].pts);
-        i++;
+            src->entry[i].day, src->entry[i].hour, src->entry[i].course.professor.name,
+            src->entry[i].course.subject.name, src->entry[i].course.team.name,
+            src->entry[i].room.id, src->entry[i].pts);
     }
 
     fclose(out);

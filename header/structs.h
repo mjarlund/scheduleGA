@@ -1,41 +1,49 @@
 #ifndef STRUCTS_HEADER_INCLUDED
 #define STRUCTS_HEADER_INCLUDED
 
-typedef struct {
-    int         id;
-    char        name[10];
-} PROFESSOR;
+typedef struct PROFESSOR PROFESSOR;
+typedef struct SUBJECT SUBJECT;
+typedef struct ROOM ROOM;
+typedef struct TEAM TEAM;
+typedef struct COURSE COURSE;
+typedef struct ENTRY ENTRY;
+typedef struct SCHEDULE SCHEDULE;
 
-typedef struct {
-    int         id, type, hours;
-    char        name[10];
-} SUBJECT;
+struct PROFESSOR {
+    int id;
+    char name[10];
+};
 
-typedef struct {
-    int         id, type;
-} ROOM;
+struct SUBJECT {
+    int id, type, hours;
+    char name[10];
+};
 
-typedef struct {
-    int         id, student[50], num_students;
-    char        name[10];
-} TEAM;
+struct ROOM {
+    int id, type;
+};
 
-typedef struct {
-    int         id;
-    PROFESSOR   professor;
-    SUBJECT     subject;
-    TEAM        team;
-} COURSE;
+struct TEAM {
+    int id, student[50], num_students;
+    char name[10];
+};
 
-typedef struct {
-    int         day, hour, pts;
-    COURSE      course;
-    ROOM        room;
-} ENTRY;
+struct COURSE {
+    int id;
+    PROFESSOR professor;
+    SUBJECT subject;
+    TEAM team;
+};
 
-typedef struct {
-    int         fitness;
-    ENTRY       entry[];
-} SCHEDULE;
+struct ENTRY {
+    int day, hour, pts;
+    COURSE course;
+    ROOM room;
+};
+
+struct SCHEDULE {
+    int         fitness, rank;
+    ENTRY       *entry;
+};
 
 #endif

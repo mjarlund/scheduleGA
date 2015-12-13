@@ -1,25 +1,22 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 #include "header/structs.h"
 #include "header/functions.h"
 
-void mutate(SCHEDULE *schedule) {
-    int i, j, n;
+void mutate(SCHEDULE * schedule, int pop) {
+    int i, j, n, g;
 
     ROOM *room;
     room = rooms();
 
-    // Number of entries to mutate.
-    n = NUM_ENTRIES;
+    for(i = 0; i < pop; i++) {
+        // Generate a random number between 0-10.
+        g = rand_num(10, 0);
+        // Let the random number denote the percentage of mutation performed on the schedules.
+        n = (NUM_ENTRIES/100)*g;
 
-    for(i = 0; i < n; i++) {
-		if(schedule->entry[i].pts != MAX_LINE_FITNESS){
-            schedule->entry[i].day = rand_num(NUM_DAYS);
-            schedule->entry[i].hour = rand_num(4)+1;
-            schedule->entry[i].room = room[rand_num(NUM_ROOMS)];
-		}
+        for(j = 0; j < n; j++) {
+            schedule[i].entry[rand_num(NUM_ENTRIES, 0)].day = rand_num(NUM_DAYS, 0);
+            schedule[i].entry[rand_num(NUM_ENTRIES, 0)].hour = rand_num(5, 1);
+            schedule[i].entry[rand_num(NUM_ENTRIES, 0)].room = room[rand_num(NUM_ROOMS, 0)];
+        }
     }
-
-    free(room);
 }
