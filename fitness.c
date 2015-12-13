@@ -5,8 +5,8 @@ int MAX_FITNESS, MAX_LINE_FITNESS;
 
 void calc_fitness(SCHEDULE *schedule, int pop){
 	int fitness, i, j, n, k, l;
-	int ok1, ok2, ok3, ok4;
-	MAX_LINE_FITNESS = 4;
+	int ok1, ok2, ok3, ok4, ok5;
+	MAX_LINE_FITNESS = 5;
 	
 	MAX_FITNESS = NUM_ENTRIES * MAX_LINE_FITNESS;
 
@@ -35,10 +35,14 @@ void calc_fitness(SCHEDULE *schedule, int pop){
                         }
                     }
 
+
+					if(schedule[i].entry[j].course.subject.type != schedule[i].entry[schedule[i].entry[k].room.id].room.type) {
+						ok5 = 0;
+					}
 				}
 			}
 
-			schedule[i].entry[j].pts = ok1+ok2+ok3+ok4;
+			schedule[i].entry[j].pts = ok1+ok2+ok3+ok4+ok5;
 			fitness += schedule[i].entry[j].pts;
 		}
 
@@ -46,19 +50,3 @@ void calc_fitness(SCHEDULE *schedule, int pop){
 
 	}
 }
-/*
-
-// Calculate the individual probability of survival in the population.
-void calc_pos(SCHEDULE *population) {
-	int sf = 0, i;
-
-	for(i = 0; i < POP; i++) {
-		sf += population[i].fitness;
-	}
-
-	// Probability of survival in the population is fitness / sum of fitnesses.
-	for(i = 0; i < POP; i++) {
-		population[i].pos = (double) population[i].fitness/sf;
-	}
-}
-*/

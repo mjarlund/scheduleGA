@@ -5,6 +5,8 @@ void export(SCHEDULE *src) {
     FILE *out;
     int i;
 
+    qsort(src->entry, NUM_ENTRIES, sizeof(ENTRY), entry_cmp_by_day);
+
     out = fopen("result/result.csv", "w");
 
     for(i = 0; i < NUM_ENTRIES; i++) {

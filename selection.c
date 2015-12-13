@@ -1,43 +1,88 @@
 #include "header/structs.h"
 #include "header/functions.h"
 
+int roulette_selection(SCHEDULE *parent, SCHEDULE *population, int n) {
+    int sum = 0, i, n_parents = 1, r, j, partial_sum;
 
-/*
-void selection_roulette(SCHEDULE *selected, SCHEDULE *selection) {
-    int sf = 0, i, j, g, ps, rank_score = 1;
-    int rank[MAX_POP];
+    // Calculate the fitness for the entire population.
+    calc_fitness(population, n);
 
-    calc_fitness(selection, MAX_POP); // Calculate fitness values in the selection pool.
+    // Sort the population by fitness in descending order. (highest to lowest)
+    qsort(population, n, sizeof(SCHEDULE), schedule_cmp_by_fitness);
 
-    // Sort elements in the selection pool by fitness values in descending order.
-    qsort(selection, MAX_POP, sizeof(SCHEDULE), schedule_cmp_by_fitness); 
-
-    for(i = pop-1; i >= 0; i--) {
-        rank[i] = rank_score++;
-        sf += rank[i];
+    // Sum the fitnesses of the entire population.
+    for(i = 0; i < n; i++) {
+        sum += population[i].fitness;
     }
 
-    for(i = 0; i < POP; i++) {
-        g = rand_num(sf)+1;
+    /* 
+        Determine how many individuals in the population should be selected for reproduction.
+        1. Atleast 80% and maximum 95% of the population.
+        3. Should be divisible by two.
+    */
+    while(n_parents%2 == 0) {
+        n_parents = rand_num(n*0.95, n*0.80);
+    }
 
-        ps = 0;
-        for(j = (MAX_POP)-1; j >= 0; j--) {
-            if(j+1 != MAX_POP && rank[j] != rank[j+1]) {
-                ps += rank[j];
-            }
+    // Loop through select parents for n parents wanted.
+    for(i = 0; i < n_parents; i++) {
+        partial_sum = 0;
+        // Generate a randum number from interval (0,sum).
+        r = rand_num(sum, 0);
 
-            if(ps >= g) {
-                selected[i] = selection[j];
+        // Loop through the population according to fitness in ascending order (lowest to highest)
+        for(j = n-1; j >= 0; j--) {
+            // Sum their fitnesses from 0 to sum.
+            partial_sum += population[j].fitness;
+
+            // When the partial sum is greater then r, stop and return the parent.
+            if(partial_sum >= r) {
+                copy_schedule(&parent[i], &population[j]);
                 break;
             }
         }
     }
-}
-*/
 
+    // Return the number of parents selected.
+    return n_parents;
+}
+
+void reduce_population(SCHEDULE *survivor, int pop_size, SCHEDULE *population, int n) {
+    int i, j, r, duplicate;
+
+    // Give every member of the population a unique id.
+    for(i = 0; i < n; i++) {
+        population[i].id = i+1;
+    }
+
+    i = 0;
+
+    while(i < pop_size) {
+        duplicate = 0;
+
+        // Generate a random number (0,n)
+        r = rand_num(n, 0);
+
+        // Check if population[r] has already been chosen once.
+        for(j = 0; j < i; j++) {
+            if(survivor[j].id == population[r].id) {
+                duplicate = 1;
+            }
+        }  
+
+        if(!duplicate) {
+            // Let population[r] survive.
+            copy_schedule(&survivor[i], &population[r]);
+            survivor[i].id = population[r].id;
+            i++; 
+        }
+    }
+}
+
+/*
 void selection_tournament(SCHEDULE *winner, int n1, SCHEDULE *competetor, int n2) {
     int i, j, k = 0, r = 0, d, n;
-    ENTRY buffer[NUM_ENTRIES];
+
     // Calculate the competetors fitness values.
     calc_fitness(competetor, n2);
 
@@ -52,14 +97,9 @@ void selection_tournament(SCHEDULE *winner, int n1, SCHEDULE *competetor, int n2
         // Choose winner and assign to array of winners.
         d = competetor[r].fitness >= competetor[k].fitness ? r : k;
 
-        for(n = 0; n < NUM_ENTRIES; n++) {
-            buffer[n] = competetor[d].entry[n];
-            winner[i].entry[n] = buffer[n];
-        }
-        
-        winner[i].fitness = competetor[d].fitness;
+        copy_schedule(&winner[i], &competetor[d]);
     }
 }
-
+*/
 
 
