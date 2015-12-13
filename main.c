@@ -37,6 +37,9 @@ int main(void) {
     init_population(current, pop);
 
     do{
+        // A select few individuals are selected for reproduction (crossover).
+        int_pop = roulette_selection(intermediate, current, pop);
+
         if(generation % 10 == 0) {
             printf("\nGeneration: %d\n", generation);
             printf("Best score so far: %d\n", optimum.fitness);
@@ -44,23 +47,32 @@ int main(void) {
             for(i=0; i < pop; i++) {
                 printf("%d: %d\n", i, current[i].fitness);
             }
-            // scanf("%d", &input);
         }
 
-        // Perform mutation on a random set of schedules in the current population.
-        mutate(current, pop);
+        // Test wether a new optimum has been found, and wether optimum is a solution to the given problem.
+        if(!test(current, pop, &optimum)) {
+            printf("A schedule that meets the criteria of a solution has been found, do you wish to export it? (Y/N)");
+            scanf("%d", &input);
+            if(input == 1) {
+                break;
+            } else {
+                printf("How many generations do you want to run before being asked again?");
+                scanf("%d", &input);
+            }
+            
+        }
 
-        int_pop = single_point_crossover(intermediate, current, pop);
+        // A number of of offspring is produced by the parents.
+        int_pop = single_point_crossover(intermediate, intermediate, pop);
 
+        // Perform mutation on the offspring.
+        mutate(intermediate, int_pop);
+
+        // The population now consists of offspring + current.
         int_pop = append_population(intermediate, int_pop, current, pop);
 
-        if(!test(intermediate, int_pop, &optimum)) {
-            printf("A schedule that meets the criteria of a solution has been found, do you wish to export it? (Y/N)");
-            // Måske bare lidt ala. det ovenover her? Donno :-P
-            break;
-        }
-
-        selection_tournament(current, pop, intermediate, int_pop);
+        // Population is reduced back to the original population size (Individuals are killed off randomly).
+        reduce_population(current, pop, intermediate, int_pop);
 
         generation++;
 
