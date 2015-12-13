@@ -16,6 +16,7 @@ void malloc_population(SCHEDULE *dest, int n) {
     for(i = 0; i < n; i++) {
         dest[i].entry = malloc(NUM_ENTRIES * sizeof(ENTRY));
         dest[i].fitness = 0;
+        dest[i].id = 0;
     }
 }
 

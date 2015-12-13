@@ -42,7 +42,7 @@ struct ENTRY {
 };
 
 struct SCHEDULE {
-    int         fitness, rank;
+    int         id, fitness;
     ENTRY       *entry;
 };
 

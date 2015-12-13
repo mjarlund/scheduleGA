@@ -43,11 +43,15 @@ double rand_double(double max);
 void calc_fitness(SCHEDULE *schedule, int pop);
 
 // Selectors.
-void selection_roulette(SCHEDULE *selected, SCHEDULE *selection);
+int roulette_selection(SCHEDULE *parent, SCHEDULE *population, int pop_size);
+void reduce_population(SCHEDULE *survivor, int pop_size, SCHEDULE *population, int n);
+
+void selection_rank(SCHEDULE *selected, int n1, SCHEDULE *selection, int n2);
 void selection_tournament(SCHEDULE *winner, int n1, SCHEDULE *competetor, int n2);
 
 // Assemblers.
 int append_population(SCHEDULE *dest, int n1, SCHEDULE *src, int n2);
+void copy_schedule(SCHEDULE *dest, SCHEDULE *src);
 
 // Sorters.
 int schedule_cmp_by_fitness(const void *a, const void *b);
