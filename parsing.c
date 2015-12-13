@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "header/structs.h"
 #include "header/functions.h"
 
@@ -11,6 +12,27 @@ int NUM_TEAMS;
 int NUM_COURSES;
 int NUM_ENTRIES;
 
+void validate_data() {
+    int errnum;
+    PROFESSOR *p;
+    SUBJECT *s;
+    ROOM *r;
+    TEAM *t;
+    COURSE *c;
+
+    p = professors();
+    s = subjects();
+    r = rooms();
+    t = teams();
+    c = courses();
+    
+    if(!p || !s || !r || !t || !c) {
+        perror("Error printed by perror");
+        exit(-1);
+    }
+
+}
+
 int buffer_array(FILE *inp) {
     int count = 0;
     char temp[BUFSIZ];
@@ -18,6 +40,8 @@ int buffer_array(FILE *inp) {
     while((fgets(temp, BUFSIZ, inp)) != NULL) {
         count++;
     }
+
+    rewind(inp);
 
     return count;
 }
@@ -30,20 +54,8 @@ PROFESSOR * professors() {
     // Open filestream.
     inp = fopen("data/professors.csv", "r");
 
-    // Count number of lines in the filestream.
-    NUM_PROFESSORS = buffer_array(inp); 
-
-    // Allocate memory corresponding the number of lines in the filestream.
-    PROFESSOR *dest = malloc(NUM_PROFESSORS*sizeof(PROFESSOR)); 
-
-    // Check for allocation failure.
-    if(dest == NULL) {
-        printf("Out of memory\n");
-        exit(EXIT_FAILURE);
-    }
-
-    // Rewind the filestream back to first entry.
-    rewind(inp); 
+    NUM_PROFESSORS = buffer_array(inp);
+    static PROFESSOR dest[255];
 
     // Get values in filestream.
     while(fgets(tmp, sizeof(PROFESSOR), inp) != NULL) {
@@ -55,7 +67,6 @@ PROFESSOR * professors() {
     // Close the filestream.
     fclose(inp);
 
-    // Return the array containing informations from the filestream.
     return dest;
 }
 
@@ -67,25 +78,12 @@ SUBJECT * subjects() {
     // Open filestream.
     inp = fopen("data/subjects.csv", "r");
 
-    // Count number of lines in the filestream.
-    NUM_SUBJECTS = buffer_array(inp); 
-
-    // Allocate memory corresponding the number of lines in the filestream.
-    SUBJECT *dest = malloc(NUM_SUBJECTS*sizeof(SUBJECT)); 
-
-    // Check for allocation failure.
-    if(dest == NULL) {
-        printf("Out of memory\n");
-        exit(EXIT_FAILURE);
-    }
-
-    // Rewind the filestream back to first entry.
-    rewind(inp); 
+    NUM_SUBJECTS = buffer_array(inp);
+    static SUBJECT dest[100];
 
     // Get values in filestream.
     while(fgets(tmp, sizeof(SUBJECT), inp) != NULL) {
         sscanf(tmp, "%d;%d;%d;%s", &dest[i].id, &dest[i].type, &dest[i].hours, dest[i].name);
-
         i++;
     }
 
@@ -104,20 +102,8 @@ ROOM * rooms() {
     // Open filestream.
     inp = fopen("data/rooms.csv", "r");
 
-    // Count number of lines in the filestream.
-    NUM_ROOMS = buffer_array(inp); 
-
-    // Allocate memory corresponding the number of lines in the filestream.
-    ROOM *dest = malloc(NUM_ROOMS*sizeof(ROOM)); 
-
-    // Check for allocation failure.
-    if(dest == NULL) {
-        printf("Out of memory\n");
-        exit(EXIT_FAILURE);
-    }
-
-    // Rewind the filestream back to first entry.
-    rewind(inp); 
+    NUM_ROOMS = buffer_array(inp);
+    static ROOM dest[150];
 
     // Get values in filestream.
     while(fgets(tmp, sizeof(ROOM), inp) != NULL) {
@@ -144,24 +130,11 @@ TEAM * teams() {
     // Open filestream.
     inp = fopen("data/teams.csv", "r");
 
-    // Count number of lines in the filestream.
-    NUM_TEAMS = buffer_array(inp); 
-
-    // Allocate memory corresponding the number of lines in the filestream.
-    TEAM *dest = malloc(NUM_TEAMS*sizeof(TEAM)); 
-
-    // Check for allocation failure.
-    if(dest == NULL) {
-        printf("Out of memory\n");
-        exit(EXIT_FAILURE);
-    }
-
-    // Rewind the filestream back to first entry.
-    rewind(inp);
+    NUM_TEAMS = buffer_array(inp);
+    static TEAM dest[255];
 
     // Get values in filestream.
     while(fgets(tmp, sizeof(TEAM), inp) != NULL) {
-        /* get the first token */
         token = strtok(tmp, ";");
 
         dest[i].id = atoi(token);
@@ -177,7 +150,7 @@ TEAM * teams() {
         token = strtok(buffer, ",");
 
         j = 0;
-        /* walk through other tokens */
+        
         while( token != NULL ) 
         {
             dest[i].student[j] = atoi(token);
@@ -205,17 +178,8 @@ COURSE * courses() {
     // Open filestream.
     inp = fopen("data/courses.csv", "r");
 
-    // Count number of lines in the filestream.
-    NUM_COURSES = buffer_array(inp); 
-
-    // Allocate memory corresponding the number of lines in the filestream.
-    COURSE *dest = malloc(NUM_COURSES*sizeof(COURSE)); 
-
-    // Check for allocation failure.
-    if(dest == NULL) {
-        printf("Out of memory\n");
-        exit(EXIT_FAILURE);
-    }
+    NUM_COURSES = buffer_array(inp);
+    static COURSE dest[500];
 
     PROFESSOR *professor;
     SUBJECT *subject;
@@ -224,9 +188,6 @@ COURSE * courses() {
     professor = professors();
     subject = subjects();
     team = teams();
-
-    // Rewind the filestream back to first entry.
-    rewind(inp); 
 
     // Get values in filestream.
     while(fgets(tmp, sizeof(PROFESSOR), inp) != NULL) {
@@ -265,11 +226,6 @@ COURSE * courses() {
 
     // Close the filestream.
     fclose(inp);
-
-    // Free the allocated arrays.
-    free(professor);
-    free(subject);
-    free(team);
 
     // Return the array containing informations from the filestream.
     return dest;
