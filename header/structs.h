@@ -6,8 +6,8 @@ typedef struct SUBJECT SUBJECT;
 typedef struct ROOM ROOM;
 typedef struct TEAM TEAM;
 typedef struct COURSE COURSE;
+typedef struct POS POS;
 typedef struct ENTRY ENTRY;
-typedef struct GENOME GENOME;
 typedef struct SCHEDULE SCHEDULE;
 
 struct PROFESSOR {
@@ -36,14 +36,14 @@ struct COURSE {
     TEAM team;
 };
 
-struct GENOME {
-    int day, hour;
+struct POS {
+    int id, day, hour;
     ROOM room;
 };
 
 struct ENTRY {
-    int pts;
-    GENOME genome;
+    int id;
+    POS pos;
     COURSE course;
 };
 

@@ -11,27 +11,13 @@ void copy_schedule(SCHEDULE *dest, SCHEDULE *src) {
     dest->id = src->id;
 }
 
-int append_population(SCHEDULE *dest, int n1, SCHEDULE *src, int n2) {
-    int i, j, n3;
-
-    n3 = n1+n2;
-
-    for(i = 0; i < n2; i++) {
-        copy_schedule(&dest[n1], &src[i]);
-        n1++;
-    }
-
-    // Return total ammount of elements in the population.
-    return n3;
-}
-
 int entry_cmp_by_day(const void *a, const void *b){ 
     ENTRY *ia = (ENTRY *)a;
     ENTRY *ib = (ENTRY *)b;
-    if ((ia->genome.day - ib->genome.day) != 0){
-        return (ia->genome.day - ib->genome.day);
+    if ((ia->pos.day - ib->pos.day) != 0){
+        return (ia->pos.day - ib->pos.day);
     } else {
-        return (ia->genome.hour - ib->genome.hour);
+        return (ia->pos.hour - ib->pos.hour);
     }
 }
 
@@ -61,3 +47,24 @@ int test(SCHEDULE *population, int pop, SCHEDULE *optimum) {
 
     return 1;
 } 
+
+
+void fill_positions(POS * pos) {
+    int i, j, k, e;
+
+    ROOM *room;
+    room = rooms();
+
+    for(i = 0; i < NUM_DAYS; i++) {
+        for(j = 0; j < NUM_HRS_DAY; j++) {
+            for(k = 0; k < NUM_ROOMS; k++) {
+                pos[e].id = e;
+                pos[e].day = rand_num(NUM_DAYS+1, 1);
+                pos[e].hour = rand_num(NUM_HRS_DAY+1, 1);
+                pos[e].room = room[rand_num(NUM_ROOMS, 0)];
+
+                e++;
+            }
+        }
+    }
+}
