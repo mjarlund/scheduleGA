@@ -35,6 +35,9 @@ int main(void) {
     POS pos[NUM_POS];
     fill_positions(pos);
 
+    COURSE *course;
+    course = courses();
+
     // Initialize populations.
     SCHEDULE population[pop];
     SCHEDULE parent[pop];
@@ -49,7 +52,7 @@ int main(void) {
     // Seed randomizer.
     srand(time(NULL));
 
-    init_population(population, pop, pos);
+    init_population(population, pop, course, pos);
 
     input = 0;
 
@@ -68,13 +71,13 @@ int main(void) {
             
         }
 
-        if(!test(population, pop, &optimum)) {
+        if(!test(population, pop, &optimum, course, pos)) {
             break;
         }
 
-        int_pop = single_point_crossover(child, parent, int_pop);
+        single_point_crossover(child, parent, int_pop);
 
-        mutate(child, int_pop, mutrate, pos);
+        swap_mutation(child, int_pop, mutrate);
 
         insert_children(population, pop, child, int_pop);
 
