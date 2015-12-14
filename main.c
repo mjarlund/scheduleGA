@@ -56,13 +56,9 @@ int main(void) {
     do{
         int_pop = roulette_selection(parent, population, pop);
 
-        if(!test(population, pop, &optimum)) {
-            break;
-        }
-
-        if(generation % 10 == 0) {
+        if(optimum.fitness < population[0].fitness) {
             printf("\nGeneration: %d\n", generation);
-            printf("Best score so far: %d\n", optimum.fitness);
+            printf("Best score so far: %d\n", population[0].fitness);
             
             printf("Generation results:\n");
             for(i=0; i < pop; i++) {
@@ -70,6 +66,10 @@ int main(void) {
             }
             // scanf("%d", &input);
             
+        }
+
+        if(!test(population, pop, &optimum)) {
+            break;
         }
 
         int_pop = single_point_crossover(child, parent, int_pop);
