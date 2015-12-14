@@ -29,11 +29,8 @@ void dealloc_population(SCHEDULE *src, int n) {
     }
 }
 
-void init_population(SCHEDULE *dest, int n, POS *pos) {
+void init_population(SCHEDULE *dest, int n, COURSE *course, POS *pos) {
     int i, j, k, e = 0;
-
-    COURSE *course;
-    course = courses();
 
     for(k = 0; k < n; k++) {
         e = 0;
@@ -48,4 +45,19 @@ void init_population(SCHEDULE *dest, int n, POS *pos) {
             }
         } 
     }
+}
+
+void add_schedule(SCHEDULE *dest, COURSE *course, POS *pos) {
+    int i, j, e = 0;
+
+    // Itterate over all of the courses.
+    for(i = 0; i < NUM_COURSES; i++) {
+        // Count number of hours for the corresponding course.
+        for(j = 0; j < course[i].subject.hours; j++) {
+            dest->entry[e].id = e;
+            dest->entry[e].course = course[i];
+            dest->entry[e].pos = pos[rand_num(NUM_POS, 0)];
+            e++;
+        }
+    } 
 }
