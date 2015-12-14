@@ -8,6 +8,7 @@ int rand_num(int max, int min) {
 void copy_schedule(SCHEDULE *dest, SCHEDULE *src) {
     memcpy(dest->entry, src->entry, sizeof(ENTRY)*NUM_ENTRIES);
     dest->fitness = src->fitness;
+    dest->id = src->id;
 }
 
 int append_population(SCHEDULE *dest, int n1, SCHEDULE *src, int n2) {
@@ -27,10 +28,10 @@ int append_population(SCHEDULE *dest, int n1, SCHEDULE *src, int n2) {
 int entry_cmp_by_day(const void *a, const void *b){ 
     ENTRY *ia = (ENTRY *)a;
     ENTRY *ib = (ENTRY *)b;
-    if ((ia->day - ib->day) != 0){
-        return (ia->day - ib->day);
+    if ((ia->genome.day - ib->genome.day) != 0){
+        return (ia->genome.day - ib->genome.day);
     } else {
-        return (ia->hour - ib->hour);
+        return (ia->genome.hour - ib->genome.hour);
     }
 }
 
@@ -43,11 +44,12 @@ int schedule_cmp_by_fitness(const void *a, const void *b) {
 int test(SCHEDULE *population, int pop, SCHEDULE *optimum) {
     int i;
 
-    // Save a copy of the best schedule so far.
-
     if(optimum->fitness != population[0].fitness) {
+        // A new optimum has been found.
         if(population[0].fitness > optimum->fitness) {
+            // Save a copy of the best schedule so far.
             copy_schedule(optimum, &population[0]);
+
             // Test wether or not opimum is a solution to the problem at hand.
             if(optimum->fitness >= MAX_FITNESS) {
                 return 0;

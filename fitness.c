@@ -14,13 +14,13 @@ void calc_fitness(SCHEDULE *schedule, int pop){
 		fitness = 0;
 
 		for(j = 0; j < NUM_ENTRIES; j++) {
-			ok1 = 1, ok2 = 1, ok3 = 1, ok4 = 1;
+			ok1 = 1, ok2 = 1, ok3 = 1, ok4 = 1, ok5 = 1;
 			for(k = (j+1); k < NUM_ENTRIES; k++) {
-				if(schedule[i].entry[j].day == schedule[i].entry[k].day && schedule[i].entry[j].hour == schedule[i].entry[k].hour){
+				if(schedule[i].entry[j].genome.day == schedule[i].entry[k].genome.day && schedule[i].entry[j].genome.hour == schedule[i].entry[k].genome.hour){
 					if(schedule[i].entry[j].course.team.id == schedule[i].entry[k].course.team.id){
 						ok1 = 0;
 					}		
-					if(schedule[i].entry[j].room.id == schedule[i].entry[k].room.id){	
+					if(schedule[i].entry[j].genome.room.id == schedule[i].entry[k].genome.room.id){	
 						ok2 = 0;
 					}
 					if (schedule[i].entry[j].course.professor.id == schedule[i].entry[k].course.professor.id){
@@ -36,7 +36,7 @@ void calc_fitness(SCHEDULE *schedule, int pop){
                     }
 
 
-					if(schedule[i].entry[j].course.subject.type != schedule[i].entry[schedule[i].entry[k].room.id].room.type) {
+					if(schedule[i].entry[j].course.subject.type != schedule[i].entry[schedule[i].entry[k].genome.room.id].genome.room.type) {
 						ok5 = 0;
 					}
 				}

@@ -44,6 +44,10 @@ void calc_fitness(SCHEDULE *schedule, int pop);
 
 // Selectors.
 int roulette_selection(SCHEDULE *parent, SCHEDULE *population, int pop_size);
+void elite_selection(SCHEDULE *elite, int elite_pop, SCHEDULE *population, int pop);
+
+void insert_children(SCHEDULE *population, int pop, SCHEDULE *child, int int_pop);
+
 void reduce_population(SCHEDULE *survivor, int pop_size, SCHEDULE *population, int n);
 
 void selection_rank(SCHEDULE *selected, int n1, SCHEDULE *selection, int n2);
@@ -61,7 +65,7 @@ int entry_cmp_by_day(const void *a, const void *b);
 int single_point_crossover(SCHEDULE *offspring, SCHEDULE *population, int pop);
 
 // Mutation.
-void mutate(SCHEDULE * schedule, int pop);
+void mutate(SCHEDULE * schedule, int pop, int mutrate);
 
 // Tester.
 int test(SCHEDULE *population, int pop, SCHEDULE *optimum);

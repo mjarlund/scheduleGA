@@ -44,9 +44,9 @@ void init_population(SCHEDULE *dest, int n) {
             // Count number of hours for the corresponding course.
             for(j = 0; j < course[i].subject.hours; j++) {
                 dest[k].entry[e].course = course[i];
-                dest[k].entry[e].day = rand_num(NUM_DAYS + 1, 1); 
-                dest[k].entry[e].hour = rand_num(5, 1);
-                dest[k].entry[e].room = room[rand_num(NUM_ROOMS, 0)];
+                dest[k].entry[e].genome.day = rand_num(NUM_DAYS + 1, 1); 
+                dest[k].entry[e].genome.hour = rand_num(5, 1);
+                dest[k].entry[e].genome.room = room[rand_num(NUM_ROOMS, 0)];
                 e++;
             }
         } 
