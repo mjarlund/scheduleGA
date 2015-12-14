@@ -7,17 +7,18 @@
 #include <string.h>
 #include <math.h>
 
-extern int MIN_POP;
-extern int MAX_POP;
+extern int NUM_DAYS;
+extern int NUM_HRS_DAY;
+extern int NUM_POS;
+
 extern int NUM_PROFESSORS;
 extern int NUM_SUBJECTS;
 extern int NUM_ROOMS;
 extern int NUM_TEAMS;
 extern int NUM_COURSES;
 extern int NUM_ENTRIES;
-extern int NUM_DAYS;
+
 extern int MAX_FITNESS;
-extern int MAX_LINE_FITNESS;
 
 // Import / parsing.
 void validate_data();
@@ -33,28 +34,20 @@ void malloc_population(SCHEDULE *dest, int n);
 void malloc_schedule(SCHEDULE *dest);
 void dealloc_population(SCHEDULE *src, int n);
 void dealloc_schedule(SCHEDULE *dest);
-void init_population(SCHEDULE *dest, int n);
+void fill_positions(POS * pos);
+void init_population(SCHEDULE *dest, int n, POS *pos);
 
 // Generators.
 int rand_num(int max, int min);
-double rand_double(double max);
 
 // Calculators.
 void calc_fitness(SCHEDULE *schedule, int pop);
 
 // Selectors.
 int roulette_selection(SCHEDULE *parent, SCHEDULE *population, int pop_size);
-void elite_selection(SCHEDULE *elite, int elite_pop, SCHEDULE *population, int pop);
-
 void insert_children(SCHEDULE *population, int pop, SCHEDULE *child, int int_pop);
 
-void reduce_population(SCHEDULE *survivor, int pop_size, SCHEDULE *population, int n);
-
-void selection_rank(SCHEDULE *selected, int n1, SCHEDULE *selection, int n2);
-void selection_tournament(SCHEDULE *winner, int n1, SCHEDULE *competetor, int n2);
-
 // Assemblers.
-int append_population(SCHEDULE *dest, int n1, SCHEDULE *src, int n2);
 void copy_schedule(SCHEDULE *dest, SCHEDULE *src);
 
 // Sorters.
@@ -65,7 +58,7 @@ int entry_cmp_by_day(const void *a, const void *b);
 int single_point_crossover(SCHEDULE *offspring, SCHEDULE *population, int pop);
 
 // Mutation.
-void mutate(SCHEDULE * schedule, int pop, int mutrate);
+void mutate(SCHEDULE * schedule, int pop, int mutrate, POS * pos);
 
 // Tester.
 int test(SCHEDULE *population, int pop, SCHEDULE *optimum);

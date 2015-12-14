@@ -29,12 +29,10 @@ void dealloc_population(SCHEDULE *src, int n) {
     }
 }
 
-void init_population(SCHEDULE *dest, int n) {
+void init_population(SCHEDULE *dest, int n, POS *pos) {
     int i, j, k, e = 0;
 
     COURSE *course;
-    ROOM *room;
-    room = rooms();
     course = courses();
 
     for(k = 0; k < n; k++) {
@@ -43,10 +41,9 @@ void init_population(SCHEDULE *dest, int n) {
         for(i = 0; i < NUM_COURSES; i++) {
             // Count number of hours for the corresponding course.
             for(j = 0; j < course[i].subject.hours; j++) {
+                dest[k].entry[e].id = e;
                 dest[k].entry[e].course = course[i];
-                dest[k].entry[e].genome.day = rand_num(NUM_DAYS + 1, 1); 
-                dest[k].entry[e].genome.hour = rand_num(5, 1);
-                dest[k].entry[e].genome.room = room[rand_num(NUM_ROOMS, 0)];
+                dest[k].entry[e].pos = pos[rand_num(NUM_POS, 0)];
                 e++;
             }
         } 

@@ -10,10 +10,10 @@ void export(SCHEDULE *src) {
     out = fopen("result/result.csv", "w");
 
     for(i = 0; i < NUM_ENTRIES; i++) {
-        fprintf(out, "%d;%d;%s;%s;%s;%d;%d\n",
-            src->entry[i].genome.day, src->entry[i].genome.hour, src->entry[i].course.professor.name,
+        fprintf(out, "%d;%d;%s;%s;%s;%d\n",
+            src->entry[i].pos.day, src->entry[i].pos.hour, src->entry[i].course.professor.name,
             src->entry[i].course.subject.name, src->entry[i].course.team.name,
-            src->entry[i].genome.room.id, src->entry[i].pts);
+            src->entry[i].pos.room.id);
     }
 
     fclose(out);

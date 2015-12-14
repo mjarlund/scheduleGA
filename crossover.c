@@ -23,7 +23,7 @@ int single_point_crossover(SCHEDULE *offspring, SCHEDULE *population, int int_po
 
         if(g != 2) {
             for(k = 0; k < s; k++) {
-                offspring[i].entry[k].genome = population[j].entry[k].genome;  
+                offspring[i].entry[k].pos = population[j].entry[k].pos;  
             }
             count++;
             int_pop--;
@@ -31,8 +31,8 @@ int single_point_crossover(SCHEDULE *offspring, SCHEDULE *population, int int_po
             copy_schedule(&offspring[j], &population[j]);
 
             for(k = 0; k < s; k++) {
-                offspring[i].entry[k].genome = population[j].entry[k].genome;
-                offspring[j].entry[k].genome = population[i].entry[k].genome;
+                offspring[i].entry[k].pos = population[j].entry[k].pos;
+                offspring[j].entry[k].pos = population[i].entry[k].pos;
             }
             count += 2;
             i++;
