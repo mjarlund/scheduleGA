@@ -2,3 +2,7 @@
 main
 
 *.plist
+
+*.out
+
+*.zip
