@@ -11,9 +11,9 @@ void export(SCHEDULE *src) {
 
     for(i = 0; i < NUM_ENTRIES; i++) {
         fprintf(out, "%d;%d;%s;%s;%s;%d\n",
-            src->entry[i].pos.day, src->entry[i].pos.hour, src->entry[i].course.professor.name,
+            src->entry[i].day, src->entry[i].hour, src->entry[i].course.professor.name,
             src->entry[i].course.subject.name, src->entry[i].course.team.name,
-            src->entry[i].pos.room.id);
+            src->entry[i].room.id);
     }
 
     fclose(out);

@@ -18,51 +18,46 @@ void calc_fitness(SCHEDULE *schedule, int pop){
 
 			for(k = (j+1); k < NUM_ENTRIES; k++) {
 
-				
-				if(schedule[i].entry[j].pos.id == schedule[i].entry[k].pos.id) {
-					// If position of one entry is equal to another...
-                    score = 0;
-                    break;
+                // The position ID is not equal, meaning we have to check each of the three position variables.
+                if(schedule[i].entry[j].day == schedule[i].entry[k].day && schedule[i].entry[j].hour == schedule[i].entry[k].hour) {
+                    // If one individual ()...
+                    if(schedule[i].entry[j].room.id == schedule[i].entry[k].room.id) {
+                        score = 0;
+                        break;
 
-				} else {
+                    } else if(schedule[i].entry[j].course.team.id == schedule[i].entry[k].course.team.id) {
+                        score = 0;
+                        break;
 
-                    // The position ID is not equal, meaning we have to check each of the three position variables.
-                    if(schedule[i].entry[j].pos.day == schedule[i].entry[k].pos.day && schedule[i].entry[j].pos.hour == schedule[i].entry[k].pos.hour) {
-                        // If one individual ()...
-                        if(schedule[i].entry[j].course.team.id == schedule[i].entry[k].course.team.id) {
-                            score = 0;
-                            break;
+                    } else if(schedule[i].entry[j].course.professor.id == schedule[i].entry[k].course.professor.id) {
+                        score = 0;
+                        break;
 
-                        } else if(schedule[i].entry[j].course.professor.id == schedule[i].entry[k].course.professor.id) {
-                            score = 0;
-                            break;
+                    } else if(schedule[i].entry[j].course.subject.type != schedule[i].entry[schedule[i].entry[k].room.id].room.type) {
+                        score = 0;
+                        break;
 
-                        } else if(schedule[i].entry[j].course.subject.type != schedule[i].entry[schedule[i].entry[k].pos.room.id].pos.room.type) {
-                            score = 0;
-                            break;
+                    } else { 
 
-                        } else { 
-
-                            // Check if two or more students are set to be at the same place at the same time.
-                            for(l = 0; l < schedule[i].entry[j].course.team.num_students; l++){
-                                for(n = 0; n < schedule[i].entry[k].course.team.num_students; n++){
-                                    if(schedule[i].entry[j].course.team.student[l] == schedule[i].entry[k].course.team.student[n]){
-                                        score = 0;
-                                        break;
-                                    }
-                                }
-
-                                if(score == 0) {
+                        // Check if two or more students are set to be at the same place at the same time.
+                        for(l = 0; l < schedule[i].entry[j].course.team.num_students; l++){
+                            for(n = 0; n < schedule[i].entry[k].course.team.num_students; n++){
+                                if(schedule[i].entry[j].course.team.student[l] == schedule[i].entry[k].course.team.student[n]){
+                                    score = 0;
                                     break;
                                 }
+                            }
 
+                            if(score == 0) {
+                                break;
                             }
 
                         }
 
-                    } 
+                    }
+
+                } 
 						
-				}
 
             }
 

@@ -29,35 +29,40 @@ void dealloc_population(SCHEDULE *src, int n) {
     }
 }
 
-void init_population(SCHEDULE *dest, int n, COURSE *course, POS *pos) {
-    int i, j, k, e = 0;
+void init_population(SCHEDULE *dest, int n, COURSE *course, ROOM *room) {
+    int i, j, k, e;
 
     for(k = 0; k < n; k++) {
         e = 0;
+
         // Itterate over all of the courses.
         for(i = 0; i < NUM_COURSES; i++) {
             // Count number of hours for the corresponding course.
             for(j = 0; j < course[i].subject.hours; j++) {
-                dest[k].entry[e].id = e;
                 dest[k].entry[e].course = course[i];
-                dest[k].entry[e].pos = pos[rand_num(NUM_POS, 0)];
+                dest[k].entry[e].day = rand_num(NUM_DAYS+1, 1);
+                dest[k].entry[e].hour = rand_num(NUM_HRS_DAY+1, 1);
+                dest[k].entry[e].room = room[rand_num(NUM_ROOMS, 0)];
                 e++;
             }
         } 
     }
 }
 
-void add_schedule(SCHEDULE *dest, COURSE *course, POS *pos) {
+/*
+void add_schedule(SCHEDULE *dest, COURSE *course, ROOM *room) {
     int i, j, e = 0;
 
     // Itterate over all of the courses.
     for(i = 0; i < NUM_COURSES; i++) {
         // Count number of hours for the corresponding course.
         for(j = 0; j < course[i].subject.hours; j++) {
-            dest->entry[e].id = e;
             dest->entry[e].course = course[i];
-            dest->entry[e].pos = pos[rand_num(NUM_POS, 0)];
+            dest->entry[e].day = rand_num(NUM_DAYS+1, 1);
+            dest->entry[e].hour = rand_num(NUM_HRS_DAY+1, 1);
+            dest->entry[e].room = room[rand_num(NUM_ROOMS, 0)];
             e++;
         }
     } 
 }
+*/
