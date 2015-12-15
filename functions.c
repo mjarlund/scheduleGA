@@ -14,10 +14,10 @@ void copy_schedule(SCHEDULE *dest, SCHEDULE *src) {
 int entry_cmp_by_day(const void *a, const void *b){ 
     ENTRY *ia = (ENTRY *)a;
     ENTRY *ib = (ENTRY *)b;
-    if ((ia->pos.day - ib->pos.day) != 0){
-        return (ia->pos.day - ib->pos.day);
+    if ((ia->day - ib->day) != 0){
+        return (ia->day - ib->day);
     } else {
-        return (ia->pos.hour - ib->pos.hour);
+        return (ia->hour - ib->hour);
     }
 }
 
@@ -27,35 +27,7 @@ int schedule_cmp_by_fitness(const void *a, const void *b) {
     return -(ia->fitness - ib->fitness);
 }
 
-int test(SCHEDULE *population, int pop, SCHEDULE *optimum, COURSE *course, POS *pos) {
-    int i;
-
-    SCHEDULE newguy;
-    malloc_schedule(&newguy);
-
-    if(optimum->fitness != population[0].fitness) {
-        // A new optimum has been found.
-        if(population[0].fitness > optimum->fitness) {
-            // Save a copy of the best schedule so far.
-            copy_schedule(optimum, &population[0]);
-
-            // Generate a new random solution, and add it to the population, overwriting the least fit candidate.
-            add_schedule(&newguy, course, pos);
-
-            copy_schedule(&population[pop-1], &newguy);
-
-            // Test wether or not opimum is a solution to the problem at hand.
-            if(optimum->fitness >= MAX_FITNESS) {
-                return 0;
-            }
-        } else {
-            copy_schedule(&population[pop-1], optimum);
-        }
-    }
-
-    return 1;
-}
-
+/*
 int schedule_contains(ENTRY * arr, int n, ENTRY target) {
     int i, j;
 
@@ -67,10 +39,11 @@ int schedule_contains(ENTRY * arr, int n, ENTRY target) {
 
     return 0;
 }
+*/
 
-
+/*
 void fill_positions(POS * pos) {
-    int i, j, k, e;
+    int i, j, k, e = 0;
 
     ROOM *room;
     room = rooms();
@@ -88,3 +61,4 @@ void fill_positions(POS * pos) {
         }
     }
 }
+*/
