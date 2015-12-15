@@ -34,9 +34,10 @@ void malloc_population(SCHEDULE *dest, int n);
 void malloc_schedule(SCHEDULE *dest);
 void dealloc_population(SCHEDULE *src, int n);
 void dealloc_schedule(SCHEDULE *dest);
-void fill_positions(POS * pos);
-void init_population(SCHEDULE *dest, int n, COURSE *course, POS *pos);
-void add_schedule(SCHEDULE *dest, COURSE *course, POS *pos);
+void init_population(SCHEDULE *dest, int n, COURSE *course, ROOM *room);
+
+// void add_schedule(SCHEDULE *dest, COURSE *course, ROOM *room);
+// void fill_positions(POS * pos);
 
 // Generators.
 int rand_num(int max, int min);
@@ -45,13 +46,14 @@ int rand_num(int max, int min);
 void calc_fitness(SCHEDULE *schedule, int pop);
 
 // Selectors.
-int roulette_selection(SCHEDULE *parent, SCHEDULE *population, int pop_size);
-void insert_children(SCHEDULE *population, int pop, SCHEDULE *child, int int_pop);
+void roulette_selection(SCHEDULE *parent, SCHEDULE *optimum, SCHEDULE *population, int pop);
+
+// void insert_children(SCHEDULE *population, int pop, SCHEDULE *child, int int_pop);
 
 // Assemblers.
 void copy_schedule(SCHEDULE *dest, SCHEDULE *src);
 
-int schedule_contains(ENTRY * arr, int n, ENTRY target);
+// int schedule_contains(ENTRY * arr, int n, ENTRY target);
 
 // Sorters.
 int schedule_cmp_by_fitness(const void *a, const void *b);
@@ -61,10 +63,8 @@ int entry_cmp_by_day(const void *a, const void *b);
 void single_point_crossover(SCHEDULE *offspring, SCHEDULE *population, int pop);
 
 // Mutation.
-void swap_mutation(SCHEDULE * schedule, int pop, int mutrate);
-
-// Tester.
-int test(SCHEDULE *population, int pop, SCHEDULE *optimum, COURSE *course, POS *pos);
+void mutation(SCHEDULE *schedule, int pop, int mutrate, ROOM *room);
+// void swap_mutation(SCHEDULE * schedule, int pop, int mutrate);
 
 // Export.
 void export(SCHEDULE *src);
