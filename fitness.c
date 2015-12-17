@@ -16,12 +16,13 @@ void calc_fitness(SCHEDULE *schedule, int pop){
 
             score = 1;
 
-			for(k = (j+1); k < NUM_ENTRIES; k++) {
+            if(schedule[i].entry[j].course.subject.type == schedule[i].entry[j].room.type) {
+
+                for(k = (j+1); k < NUM_ENTRIES; k++) {
 
                 // The position ID is not equal, meaning we have to check each of the three position variables.
                 if(schedule[i].entry[j].day == schedule[i].entry[k].day && schedule[i].entry[j].hour == schedule[i].entry[k].hour) {
-                    // If one individual ()...
-                    if(schedule[i].entry[j].room.id == schedule[i].entry[k].room.id) {
+                    if (schedule[i].entry[j].room.id == schedule[i].entry[k].room.id) {
                         score = 0;
                         break;
 
@@ -33,10 +34,6 @@ void calc_fitness(SCHEDULE *schedule, int pop){
                         score = 0;
                         break;
 
-                    } else if(schedule[i].entry[j].course.subject.type != schedule[i].entry[schedule[i].entry[k].room.id].room.type) {
-                        score = 0;
-                        break;
-
                     } else { 
 
                         // Check if two or more students are set to be at the same place at the same time.
@@ -45,20 +42,20 @@ void calc_fitness(SCHEDULE *schedule, int pop){
                                 if(schedule[i].entry[j].course.team.student[l] == schedule[i].entry[k].course.team.student[n]){
                                     score = 0;
                                     break;
+                                    }
                                 }
-                            }
 
-                            if(score == 0) {
-                                break;
                             }
 
                         }
 
-                    }
+                    } 
+                        
 
-                } 
-						
-
+                }
+            
+            } else {
+                score = 0;
             }
 
             // Indent the fitness score.
