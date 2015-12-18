@@ -6,26 +6,12 @@ void malloc_schedule(SCHEDULE *dest) {
     dest->fitness = 0;
 }
 
-void dealloc_schedule(SCHEDULE *src) {
-    free(src->entry);
-}
-
 void malloc_population(SCHEDULE *dest, int n) {
     int i;
 
     for(i = 0; i < n; i++) {
         dest[i].entry = malloc(NUM_ENTRIES * sizeof(ENTRY));
         dest[i].fitness = 0;
-        dest[i].id = 0;
-    }
-}
-
-void dealloc_population(SCHEDULE *src, int n) {
-    int i; 
-
-    for(i = 0; i < n; i++) {
-        free(src[i].entry);
-        src[i].fitness = 0;
     }
 }
 
@@ -48,21 +34,3 @@ void init_population(SCHEDULE *dest, int n, COURSE *course, ROOM *room) {
         } 
     }
 }
-
-/*
-void add_schedule(SCHEDULE *dest, COURSE *course, ROOM *room) {
-    int i, j, e = 0;
-
-    // Itterate over all of the courses.
-    for(i = 0; i < NUM_COURSES; i++) {
-        // Count number of hours for the corresponding course.
-        for(j = 0; j < course[i].subject.hours; j++) {
-            dest->entry[e].course = course[i];
-            dest->entry[e].day = rand_num(NUM_DAYS+1, 1);
-            dest->entry[e].hour = rand_num(NUM_HRS_DAY+1, 1);
-            dest->entry[e].room = room[rand_num(NUM_ROOMS, 0)];
-            e++;
-        }
-    } 
-}
-*/

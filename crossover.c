@@ -1,42 +1,29 @@
 #include "header/structs.h"
 #include "header/functions.h"
 
-void single_point_crossover(SCHEDULE *child, SCHEDULE *parent, int pop) {
-    int i, j, k, r;
+void uniform_crossover(SCHEDULE *child1, SCHEDULE *child2, SCHEDULE parent1, SCHEDULE parent2) {
+    int i;
+    double g, crossprob;
 
-    for(i = 0; i < pop; i += 2) {
+    // Make a copy of the parents, and assign it to the children.
+    copy_schedule(child1, &parent1);
+    copy_schedule(child2, &parent2);
 
-        // Choose a random splitpoint.
-        r = rand_num(NUM_ENTRIES, 0);
+    // Probability of mutation for each element, each element has an equal chance of being mutated.
+    crossprob = (1.0/NUM_ENTRIES);
 
-        // Copy parent1 to child1
-        copy_schedule(&child[i], &parent[i]);
-        // Copy parent2 to child2
-        copy_schedule(&child[i+1], &parent[i+1]);
+    for(i = 0; i < NUM_ENTRIES; i++) {
+        // Random number determining wether to cross or not.
+        g = randZeroToOne();
 
-        // Copy position elements that are not already in child from parent.
-        for(j = 0; j < r; j++) {
+        if(crossprob >= g) {
+            child1->entry[i].day =  parent2.entry[i].day;
+            child1->entry[i].hour = parent2.entry[i].hour;
+            child1->entry[i].room = parent2.entry[i].room;
 
-            child[i].entry[j].day = parent[i+1].entry[j].day;  
-            child[i].entry[j].hour = parent[i+1].entry[j].hour; 
-            child[i].entry[j].room = parent[i+1].entry[j].room; 
-
-            child[i+1].entry[j].day = parent[i].entry[j].day;   
-            child[i+1].entry[j].hour = parent[i].entry[j].hour; 
-            child[i+1].entry[j].room = parent[i].entry[j].room; 
-
-
-            /*
-            if(!schedule_contains(child[i].entry, NUM_ENTRIES, parent[i+1].entry[j])) {
-
-                child[i].entry[j].pos = parent[i+1].entry[j].pos;
-
-            } else if(!schedule_contains(child[i+1].entry, NUM_ENTRIES, parent[i].entry[j])) {
-
-                child[i+1].entry[j].pos = parent[i].entry[j].pos;
-            }
-            */
-        }
+            child2->entry[i].day =  parent1.entry[i].day;
+            child2->entry[i].hour = parent1.entry[i].hour;
+            child2->entry[i].room = parent1.entry[i].room;
+        }     
     }
-    
-} 
+}
