@@ -32,7 +32,7 @@ def load(path):
     return q, parsed, cell, {t: sorted(d) for t, d in days.items()}
 
 
-def block(name, q, cell, days, team, width=24):
+def block(name, q, cell, days, team, width=21):
     order = days.get(team, [])
     if not order:
         return [f"  {team}: no lessons"]
@@ -47,7 +47,7 @@ def block(name, q, cell, days, team, width=24):
                 row.append("-" * 7)
             else:
                 lessons += 1
-                row.append("%s/%s" % (e["subjname"][:9], e["profname"][:5]))
+                row.append("%s/%s" % (e["subjname"][:9], e["profname"][:9]))
         used = [h for h in range(1, HOURS + 1) if (team, d, h) in cell]
         if used:
             gaps += (max(used) - min(used) + 1) - len(used)
