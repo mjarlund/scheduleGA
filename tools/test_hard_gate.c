@@ -115,7 +115,7 @@ static void build_worst_soft(SCHEDULE *s, int seed_shift) {
 int main(void) {
     int i, j, pop = 300;
     int clashes, type_bad, team_days, gaps, prof_days;
-    long soft, worst_soft = 0, best_score = 0, worst_zero = 0, best_nonzero = 0;
+    long soft, worst_soft = 0, worst_zero = 0, best_nonzero = 0;
     int have_zero = 0, have_nonzero = 0, seen_zero = 0, seen_nonzero = 0;
     SCHEDULE *s;
     long hard_scale;
@@ -265,6 +265,5 @@ int main(void) {
 
     printf("\n%s (%d failure%s)\n", failures ? "FAILED" : "PASS",
            failures, failures == 1 ? "" : "s");
-    (void)best_score;
     return failures ? 1 : 0;
 }
