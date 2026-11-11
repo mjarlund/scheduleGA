@@ -1,0 +1,7 @@
+pop=50 seeds=[1, 2, 3, 4, 5] rounds=5 (25 runs per variant)
+  A: median=1.633s min=1.055s max=3.338s mean=1.856s
+  B: median=1.061s min=0.630s max=2.067s mean=1.159s
+  median speedup A->B: 1.54x  (min-based 1.67x)
+  identical generation count per seed: True
+  identical exported result.csv per seed: True
+  generations per seed: {1: 526, 2: 414, 3: 671, 4: 587, 5: 1157}

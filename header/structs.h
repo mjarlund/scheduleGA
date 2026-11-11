@@ -35,14 +35,26 @@ struct COURSE {
     TEAM team;
 };
 
+/* An entry no longer embeds its course (280 bytes of professor, subject and
+ * student list) and its room; it stores the index of each into the global
+ * COURSE_TABLE / ROOM_TABLE that courses() / rooms() fill in.  A whole genome
+ * is therefore NUM_ENTRIES * 16 bytes instead of NUM_ENTRIES * 280, which is
+ * what copy_schedule() memcpy's around a hundred times per generation.
+ *
+ * The GA treats an entry's course as immutable: init_population() assigns
+ * course i to the entries of course i, and neither crossover nor mutation ever
+ * changes it, so the index carries exactly the information the struct did.
+ * Rooms were already chosen by table index in the original code
+ * (room[rand_num(NUM_ROOMS, 0)]), so that index is carried over unchanged. */
 struct ENTRY {
     int day, hour;
-    ROOM room;
-    COURSE course;
+    int room;   /* index into ROOM_TABLE, 0 .. NUM_ROOMS-1 */
+    int course; /* index into COURSE_TABLE, 0 .. NUM_COURSES-1 */
 };
 
 struct SCHEDULE {
-    int fitness;
+    int fitness;    /* the objective (see fitness.c); drives selection          */
+    int violations; /* entries a school would reject: clashes + wrong room type */
     ENTRY *entry;
 };
 
