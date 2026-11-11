@@ -116,10 +116,19 @@ typedef struct {
 } DAYCELL;
 
 static int *bucket_next, *bucket_head, *bucket_stamp;
+/* course_team / course_prof: dense 0..n-1 indices for the class and professor of
+ * every course.  team_overlap: NUM_TEAMS x NUM_TEAMS, 1 iff the two classes
+ * share at least one student.  The 2015 conflict test compared the two student
+ * lists element by element (26 x 26 = 676 comparisons per candidate pair),
+ * which was free on a 195-day grid where almost no two entries share a slot but
+ * dominates on a tight grid (~10x the per-generation cost at 12 days).  The
+ * matrix answers the same question with one load, so the clash definition and
+ * the fitness value are unchanged. */
+static int course_team[500], course_prof[500];
+static unsigned char *team_overlap;
 #if SOFT_OBJECTIVE
 static DAYCELL *team_cell, *prof_cell;
 static int *team_touched, *prof_touched;
-static int course_team[500], course_prof[500];
 static int team_days_stride, prof_days_stride;
 #endif
 static int stamp_clock, workspace_ready;
@@ -135,10 +144,11 @@ static void *xcalloc(size_t n, size_t size) {
 
 /* Dense 0..n-1 indices for the team and the professor of every course, so the
  * (entity, day) stamps can be a flat array.  Team and professor *ids* are not
- * guaranteed to be contiguous, so deriving an index as `id-1` would be wrong. */
-#if SOFT_OBJECTIVE
+ * guaranteed to be contiguous, so deriving an index as `id-1` would be wrong.
+ * Also builds the class-overlap matrix used by the clash test, which is why it
+ * runs for both objectives. */
 static void build_entity_indices(void) {
-    int i, j, teams = 0, professors = 0;
+    int i, j, l, n, teams = 0, professors = 0;
 
     for(i = 0; i < NUM_COURSES; i++) {
         for(j = 0; j < i; j++) {
@@ -152,12 +162,33 @@ static void build_entity_indices(void) {
         }
         course_prof[i] = (j < i) ? course_prof[j] : professors++;
     }
+
+    team_overlap = xcalloc((size_t)NUM_TEAMS * (size_t)NUM_TEAMS, 1);
+    for(i = 0; i < NUM_COURSES; i++) {
+        for(j = i + 1; j < NUM_COURSES; j++) {
+            int ti = course_team[i], tj = course_team[j];
+
+            if(ti == tj || team_overlap[ti * NUM_TEAMS + tj]) {
+                continue;   /* same class, or already known to overlap */
+            }
+            for(l = 0; l < COURSE_TABLE[i].team.num_students; l++) {
+                for(n = 0; n < COURSE_TABLE[j].team.num_students; n++) {
+                    if(COURSE_TABLE[i].team.student[l] == COURSE_TABLE[j].team.student[n]) {
+                        team_overlap[ti * NUM_TEAMS + tj] = 1;
+                        team_overlap[tj * NUM_TEAMS + ti] = 1;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+#if SOFT_OBJECTIVE
     team_days_stride = NUM_DAYS + 1;
     prof_days_stride = NUM_DAYS + 1;
+#endif
     (void)teams;
     (void)professors;
 }
-#endif
 
 static void init_workspace(void) {
     int nslots = (NUM_DAYS + 1) * (NUM_HRS_DAY + 1);
@@ -165,8 +196,8 @@ static void init_workspace(void) {
     bucket_next = xcalloc(NUM_ENTRIES + 1, sizeof(int));
     bucket_head = xcalloc(nslots, sizeof(int));
     bucket_stamp = xcalloc(nslots, sizeof(int));
-#if SOFT_OBJECTIVE
     build_entity_indices();
+#if SOFT_OBJECTIVE
     team_cell = xcalloc((size_t)NUM_TEAMS * team_days_stride, sizeof(DAYCELL));
     prof_cell = xcalloc((size_t)NUM_PROFESSORS * prof_days_stride, sizeof(DAYCELL));
     team_touched = xcalloc(NUM_ENTRIES + 1, sizeof(int));
@@ -192,9 +223,9 @@ static void bump_clock(void) {
 }
 
 static void evaluate(ENTRY *entry, PARTS *p) {
-    int j, k, l, n, score, slot, cur;
+    int j, k, slot, cur;
 #if SOFT_OBJECTIVE
-    int day, hour;
+    int day, hour, n;
 #endif
 
     memset(p, 0, sizeof(*p));
@@ -244,21 +275,11 @@ static void evaluate(ENTRY *entry, PARTS *p) {
                 } else if(ca->professor.id == cb->professor.id) {
                     p->clashes++;
                     break;
-                } else {
+                } else if(team_overlap[course_team[a->course] * NUM_TEAMS
+                                      + course_team[b->course]]) {
                     /* Two or more students in the same place at the same time. */
-                    score = 1;
-                    for(l = 0; l < ca->team.num_students && score; l++) {
-                        for(n = 0; n < cb->team.num_students; n++) {
-                            if(ca->team.student[l] == cb->team.student[n]) {
-                                score = 0;
-                                break;
-                            }
-                        }
-                    }
-                    if(!score) {
-                        p->clashes++;
-                        break;
-                    }
+                    p->clashes++;
+                    break;
                 }
             }
         }
