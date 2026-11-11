@@ -40,6 +40,11 @@ COURSE * courses();
 void malloc_population(SCHEDULE *dest, int n);
 void malloc_schedule(SCHEDULE *dest);
 void init_population(SCHEDULE *dest, int n);
+/* Fourth pass: constraint-directed constructor and min-conflicts repair
+ * (search.c).  Both keep the room-type rule hard and never change a course's
+ * identity. */
+void greedy_init(SCHEDULE *dest, int n);
+int repair_schedule(SCHEDULE *s, int max_steps);
 
 // Generators.
 int rand_num(int max, int min);

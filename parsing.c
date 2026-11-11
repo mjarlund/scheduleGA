@@ -34,6 +34,20 @@ int NUM_ENTRIES;
 COURSE *COURSE_TABLE;
 ROOM *ROOM_TABLE;
 
+/* Data directory.  Defaults to "data", so the committed dataset and every
+ * earlier result are unchanged; SGA_DATA_DIR points an experiment at a
+ * generated variant (a tighter grid needs more teachers, see the fourth pass)
+ * without copying the tree. */
+static const char *data_path(const char *name, char *buf, size_t size) {
+    const char *dir = getenv("SGA_DATA_DIR");
+
+    if(dir == NULL || *dir == '\0') {
+        dir = "data";
+    }
+    snprintf(buf, size, "%s/%s", dir, name);
+    return buf;
+}
+
 static void fail(const char *path, int lineno, const char *msg) {
     if(lineno > 0) {
         fprintf(stderr, "%s:%d: %s\n", path, lineno, msg);
@@ -131,7 +145,8 @@ void validate_data() {
 }
 
 PROFESSOR * professors() {
-    const char *path = "data/professors.csv";
+    char pathbuf[512];
+    const char *path = data_path("professors.csv", pathbuf, sizeof pathbuf);
     int i = 0, lineno = 0;
     char tmp[LINE_MAX];
     char name[64];
@@ -162,7 +177,8 @@ PROFESSOR * professors() {
 }
 
 SUBJECT * subjects() {
-    const char *path = "data/subjects.csv";
+    char pathbuf[512];
+    const char *path = data_path("subjects.csv", pathbuf, sizeof pathbuf);
     int i = 0, lineno = 0;
     char tmp[LINE_MAX];
     char name[64];
@@ -200,7 +216,8 @@ SUBJECT * subjects() {
 }
 
 ROOM * rooms() {
-    const char *path = "data/rooms.csv";
+    char pathbuf[512];
+    const char *path = data_path("rooms.csv", pathbuf, sizeof pathbuf);
     int i = 0, lineno = 0;
     char tmp[LINE_MAX];
     FILE *inp;
@@ -231,7 +248,8 @@ ROOM * rooms() {
 }
 
 TEAM * teams() {
-    const char *path = "data/teams.csv";
+    char pathbuf[512];
+    const char *path = data_path("teams.csv", pathbuf, sizeof pathbuf);
     int i = 0, lineno = 0;
     char tmp[LINE_MAX];
     char name[64];
@@ -283,7 +301,8 @@ TEAM * teams() {
 }
 
 COURSE * courses() {
-    const char *path = "data/courses.csv";
+    char pathbuf[512];
+    const char *path = data_path("courses.csv", pathbuf, sizeof pathbuf);
     int i = 0, j, lineno = 0, p, s, t, count = 0;
     char tmp[LINE_MAX];
     FILE *inp;

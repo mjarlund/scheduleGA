@@ -6,6 +6,23 @@
 int NUM_DAYS;
 int NUM_HRS_DAY;
 
+/* The slot grid.  195 x 4 was hard-coded here until the fourth pass; the
+ * defaults are unchanged, so every earlier number in the report still
+ * reproduces, while the grid can now be shrunk to a real school week:
+ *
+ *   SGA_DAYS=6 ./sga                 (6 days x 4 hours)
+ *   make CFLAGS="... -DSGA_DEFAULT_DAYS=6"
+ *
+ * NUM_DAYS is read before any data is touched, and every consumer (bucket
+ * arrays, the soft-objective stamp tables, mutation, export) derives its bounds
+ * from this global, so nothing else had to change. */
+#ifndef SGA_DEFAULT_DAYS
+#define SGA_DEFAULT_DAYS 195
+#endif
+#ifndef SGA_DEFAULT_HOURS
+#define SGA_DEFAULT_HOURS 4
+#endif
+
 /* Bounds that make the GA terminate even when MAX_FITNESS is unreachable (an
  * infeasible dataset, or a population that simply stops improving).  Both can be
  * overridden from the environment for experiments; the defaults are far beyond
@@ -68,11 +85,14 @@ int main(void) {
     int i, best, stagnant = 0, generation = 1;
     int pop, max_pop, max_generations, stagnation_limit;
     int refine, refined = 0, first_feasible = 0;
+#if REPAIR
+    int repair_steps;
+#endif
     int best_fit, worst_fit;
     long sum;
     const char *stopped = "loop exited";
-    NUM_DAYS = 195;
-    NUM_HRS_DAY = 4;
+    NUM_DAYS = env_int("SGA_DAYS", SGA_DEFAULT_DAYS);
+    NUM_HRS_DAY = env_int("SGA_HOURS", SGA_DEFAULT_HOURS);
 
     // Validate the data provided before executing the program.
     validate_data();
@@ -85,6 +105,9 @@ int main(void) {
 
     max_generations = env_int("SGA_MAX_GENERATIONS", DEFAULT_MAX_GENERATIONS);
     stagnation_limit = env_int("SGA_STAGNATION", DEFAULT_STAGNATION_LIMIT);
+#if REPAIR
+    repair_steps = env_int("SGA_REPAIR_STEPS", DEFAULT_REPAIR_STEPS);
+#endif
 #if SOFT_OBJECTIVE
     refine = env_int0("SGA_REFINE", DEFAULT_REFINE);
 #else
@@ -116,7 +139,12 @@ int main(void) {
     // outweighs every soft gain the objective can offer (fitness.c).
     objective_check();
 
+#if INIT_MODE
+    /* Least-conflict construction instead of independent random draws. */
+    greedy_init(population, max_pop);
+#else
     init_population(population, max_pop);
+#endif
 
     do{ 
 
@@ -133,6 +161,26 @@ int main(void) {
                 best = i;
             }
         }
+
+#if REPAIR
+        /* Repair the best individual before it is compared with the optimum:
+           min-conflicts local search relocates offending entries, and the
+           result replaces the elite only if it scores better.  With the hard
+           gate unchanged, a repaired schedule is feasible exactly when it has
+           no clash left. */
+        if(population[best].violations > 0) {
+            SCHEDULE scratch;
+
+            malloc_schedule(&scratch);
+            copy_schedule(&scratch, &population[best]);
+            repair_schedule(&scratch, repair_steps);
+            calc_fitness(&scratch, 1);
+            if(scratch.fitness > population[best].fitness) {
+                copy_schedule(&population[best], &scratch);
+            }
+            free(scratch.entry);
+        }
+#endif
 
         // Check if a new optimum (best solution) is present.  If so, make a copy.
         if(population[best].fitness > optimum.fitness) {

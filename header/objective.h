@@ -38,6 +38,33 @@
  * timetable needs the jump "to a day my class already uses", and the uniform
  * draw proposes that jump far more often than a local one.  Default 0 = the
  * original operator; the constant exists so the ablation can be rebuilt. */
+/* Fourth pass -- search upgrades for a tight (realistic) grid.
+ *
+ * INIT_MODE 0: the 2015 random initialiser (day/hour/room drawn independently).
+ *           1: least-conflict construction -- each entry is placed in the
+ *              (day, hour, room-of-type) that adds the fewest conflicts to what
+ *              is already placed, ties broken randomly for diversity.
+ * REPAIR   0: off.
+ *          n: after the fitness pass, run min-conflicts local search on the
+ *             elite with a budget of n moves (SGA_REPAIR_STEPS overrides), and
+ *             keep the result only if it scores better.  The GA structure, the
+ *             operators and the hard gate are unchanged; this is a memetic
+ *             "GA + repair" hybrid, not a replacement.
+ *
+ * Both default to off, so `make` reproduces every earlier number exactly.
+ * `make tight` builds INIT_MODE=1 REPAIR=1 as ./sga-tight. */
+#ifndef INIT_MODE
+#define INIT_MODE 0
+#endif
+
+#ifndef REPAIR
+#define REPAIR 0
+#endif
+
+#ifndef DEFAULT_REPAIR_STEPS
+#define DEFAULT_REPAIR_STEPS 2000
+#endif
+
 #ifndef MUT_DAY_WINDOW
 #define MUT_DAY_WINDOW 0
 #endif

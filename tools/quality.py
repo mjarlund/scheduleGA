@@ -30,7 +30,10 @@ import sys
 from collections import defaultdict
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-D = os.path.join(ROOT, "data")
+# SGA_DATA_DIR matches the program's own data-directory switch, so the
+# generated tight-grid variants (data-d5, data-d6, ...) can be validated with
+# the same independent checker.
+D = os.environ.get("SGA_DATA_DIR") or os.path.join(ROOT, "data")
 
 
 def rows(name):

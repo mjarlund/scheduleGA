@@ -9,7 +9,7 @@
 #   make equivalence  compare this tree's fitness with the parent branch
 CC      ?= cc
 CFLAGS  ?= -O2 -std=c99 -Wall -D_POSIX_C_SOURCE=200809L
-SRC      = main.c fitness.c parsing.c initialize.c functions.c crossover.c mutation.c selection.c export.c
+SRC      = main.c fitness.c parsing.c initialize.c functions.c crossover.c mutation.c selection.c export.c search.c
 HDR      = header/structs.h header/functions.h header/objective.h
 BENCH_SEEDS = 1 2 3 4 5
 LEGACY_FLAGS = -DSOFT_OBJECTIVE=0 -DTYPED_INIT=0
@@ -23,6 +23,19 @@ sga: $(SRC) $(HDR) | result
 # genuine A/B instead of a reconstruction.
 sga-legacy: $(SRC) $(HDR) | result
 	$(CC) $(CFLAGS) $(LEGACY_FLAGS) -o $@ $(SRC)
+
+# Fourth pass: the same GA with constraint-directed initialisation and a
+# min-conflicts repair operator on the elite.  Used for the tight-grid
+# experiments; `make` is unaffected.
+sga-tight: $(SRC) $(HDR) | result
+	$(CC) $(CFLAGS) -DINIT_MODE=1 -DREPAIR=1 -o $@ $(SRC)
+
+# The two halves, for the ablation in the fourth pass.
+sga-greedy: $(SRC) $(HDR) | result
+	$(CC) $(CFLAGS) -DINIT_MODE=1 -DREPAIR=0 -o $@ $(SRC)
+
+sga-repair: $(SRC) $(HDR) | result
+	$(CC) $(CFLAGS) -DINIT_MODE=0 -DREPAIR=1 -o $@ $(SRC)
 
 both: sga sga-legacy
 
@@ -63,7 +76,7 @@ test-hard-gate: $(SRC) $(HDR)
 	./tools/test-hard-gate
 
 clean:
-	rm -f sga sga-legacy tools/fixed_seed.so tools/test-hard-gate
+	rm -f sga sga-legacy sga-tight sga-greedy sga-repair tools/fixed_seed.so tools/test-hard-gate
 	rm -f result/result.csv
 
-.PHONY: all run bench bench-time equivalence equivalence-legacy test-hard-gate clean both
+.PHONY: all run bench bench-time equivalence equivalence-legacy test-hard-gate clean both tight
