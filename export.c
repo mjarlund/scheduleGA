@@ -1,6 +1,15 @@
 #include "header/structs.h"
 #include "header/functions.h"
+#include <errno.h>
+#include <sys/stat.h>
 
+/* Write the timetable.
+ *
+ * The original opened result/result.csv unchecked, so a binary run without the
+ * directory (or from another working directory) segfaulted inside fprintf after
+ * the whole GA had run.  The directory is created here if it is missing, and a
+ * remaining failure is reported instead of dereferencing a NULL FILE*.
+ */
 void export(SCHEDULE *src) {
     FILE *out;
     int i;
@@ -9,8 +18,15 @@ void export(SCHEDULE *src) {
 
     out = fopen("result/result.csv", "w");
     if(out == NULL) {
+        if(mkdir("result", 0755) != 0 && errno != EEXIST) {
+            perror("mkdir result");
+            exit(EXIT_FAILURE);
+        }
+        out = fopen("result/result.csv", "w");
+    }
+    if(out == NULL) {
         perror("result/result.csv");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
     for(i = 0; i < NUM_ENTRIES; i++) {
@@ -22,5 +38,8 @@ void export(SCHEDULE *src) {
             course->subject.name, course->team.name, room->id);
     }
 
-    fclose(out);
+    if(fclose(out) != 0) {
+        perror("result/result.csv");
+        exit(EXIT_FAILURE);
+    }
 }

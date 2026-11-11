@@ -30,7 +30,6 @@ extern ROOM *ROOM_TABLE;
 
 // Import / parsing.
 void validate_data();
-int buffer_array(FILE *inp);
 PROFESSOR * professors();
 SUBJECT * subjects();
 ROOM * rooms();
