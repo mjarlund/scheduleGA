@@ -12,3 +12,6 @@ sga
 result/*
 !result/.gitkeep
 tools/*.so
+
+# `make bench` output
+tools/bench-bench.json
