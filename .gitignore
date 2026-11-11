@@ -6,3 +6,8 @@ main
 *.out
 
 *.zip
+
+# build artefacts and benchmark output
+sga
+result/
+tools/*.so
