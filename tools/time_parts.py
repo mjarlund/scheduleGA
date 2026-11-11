@@ -21,12 +21,15 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 SO = os.path.join(HERE, "fixed_seed.so")
 
-DECL_OLD = "    int i, new_opt, generation = 1;\n"
+DECL_ANCHORS = (
+    "    int i, new_opt, generation = 1;\n",            # parent / perf branch
+    "    int i, best, stagnant = 0, generation = 1;\n", # fix/generation-loop
+    "int main(void) {\n",                              # fallback
+)
 # Integer nanoseconds on purpose: a double accumulator in the generation loop
 # measurably perturbs this binary (625 ms -> 1093 ms for one seeded run on the
 # dev box), which would make the split report its own overhead.
-DECL_NEW = (DECL_OLD +
-            "    struct timespec _t0, _t1; long long _tf = 0;\n")
+DECL_SUFFIX = "    struct timespec _t0, _t1; long long _tf = 0;\n"
 CALL = "        calc_fitness(population, max_pop);\n"
 CALL_NEW = ("        clock_gettime(CLOCK_MONOTONIC, &_t0);\n" + CALL +
             "        clock_gettime(CLOCK_MONOTONIC, &_t1);\n"
@@ -48,10 +51,14 @@ def build(src_dir):
             open(os.path.join(src_dir, "header", f)).read())
 
     src = open(os.path.join(tmp, "main.c")).read()
-    for old, new in ((DECL_OLD, DECL_NEW), (CALL, CALL_NEW), (EXPORT, EXPORT_NEW)):
-        if old not in src:
-            sys.exit("instrumentation anchor not found:\n" + old)
-        src = src.replace(old, new, 1)
+    decl = next((d for d in DECL_ANCHORS if d in src), None)
+    if decl is None:
+        sys.exit("instrumentation anchor not found: " + " | ".join(DECL_ANCHORS))
+    if CALL not in src or EXPORT not in src:
+        sys.exit("instrumentation anchor not found (calc_fitness/export)")
+    src = src.replace(decl, decl + DECL_SUFFIX, 1)
+    src = src.replace(CALL, CALL_NEW, 1)
+    src = src.replace(EXPORT, EXPORT_NEW, 1)
     open(os.path.join(tmp, "main.c"), "w").write(src)
 
     os.symlink(os.path.join(ROOT, "data"), os.path.join(tmp, "data"))
