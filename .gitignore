@@ -9,5 +9,6 @@ main
 
 # build artefacts and benchmark output
 sga
-result/
+result/*
+!result/.gitkeep
 tools/*.so
