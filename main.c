@@ -31,13 +31,12 @@ int main(void) {
     // Seed randomizer.
     srand(time(NULL));
 
-    COURSE *course;
-    course = courses();
+    // Build the course and room tables (courses() also sets NUM_ENTRIES) that
+    // the entries' indices refer to.
+    courses();
+    rooms();
 
-    ROOM *room;
-    room = rooms();
-
-    init_population(population, max_pop, course, room);
+    init_population(population, max_pop);
 
     do{ 
 
@@ -72,8 +71,8 @@ int main(void) {
             if(i %  2) {
                 uniform_crossover(&population[i], &population[i-1], parent[i], parent[i-1]);
                 // Mutate the offspring.
-                mutation(&population[i], room);
-                mutation(&population[i-1], room);
+                mutation(&population[i]);
+                mutation(&population[i-1]);
             }
             copy_schedule(&population[(max_pop-1)-i], &parent[i]); 
         }

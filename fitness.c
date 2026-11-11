@@ -61,27 +61,32 @@ void calc_fitness(SCHEDULE *schedule, int pop){
         fitness = 0;
         for(j = 0; j < NUM_ENTRIES; j++) {
             ENTRY *a = &entry[j];
+            /* The entry only stores indices; resolve them once per entry. */
+            COURSE *ca = &COURSE_TABLE[a->course];
+            ROOM *ra = &ROOM_TABLE[a->room];
 
             score = 1;
-            if(a->course.subject.type == a->room.type) {
+            if(ca->subject.type == ra->type) {
                 // Only entries in the same (day,hour) slot can conflict.
                 for(k = next[j]; k != -1; k = next[k]) {
                     ENTRY *b = &entry[k];
+                    COURSE *cb = &COURSE_TABLE[b->course];
+                    ROOM *rb = &ROOM_TABLE[b->room];
 
-                    if(a->room.id == b->room.id) {
+                    if(ra->id == rb->id) {
                         score = 0;
                         break;
-                    } else if(a->course.team.id == b->course.team.id) {
+                    } else if(ca->team.id == cb->team.id) {
                         score = 0;
                         break;
-                    } else if(a->course.professor.id == b->course.professor.id) {
+                    } else if(ca->professor.id == cb->professor.id) {
                         score = 0;
                         break;
                     } else {
                         // Check if two or more students are set to be at the same place at the same time.
-                        for(l = 0; l < a->course.team.num_students; l++) {
-                            for(n = 0; n < b->course.team.num_students; n++) {
-                                if(a->course.team.student[l] == b->course.team.student[n]) {
+                        for(l = 0; l < ca->team.num_students; l++) {
+                            for(n = 0; n < cb->team.num_students; n++) {
+                                if(ca->team.student[l] == cb->team.student[n]) {
                                     score = 0;
                                     break;
                                 }

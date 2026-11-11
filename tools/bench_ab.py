@@ -50,6 +50,7 @@ def main():
     res = {"A": [], "B": []}
     gens = {"A": {}, "B": {}}
     dig = {"A": {}, "B": {}}
+    per = {"A": {s: [] for s in a.seeds}, "B": {s: [] for s in a.seeds}}
 
     for r in range(a.rounds):
         order = ["A", "B"] if r % 2 == 0 else ["B", "A"]
@@ -57,6 +58,7 @@ def main():
             for k in order:
                 dt, g, d, rc = run(bins[k], a.pop, seed, a.timeout)
                 res[k].append(dt)
+                per[k][seed].append(dt)
                 gens[k][seed] = g
                 dig[k][seed] = d
                 if rc != 0:
@@ -77,6 +79,11 @@ def main():
     print(f"  identical generation count per seed: {same_traj}")
     print(f"  identical exported result.csv per seed: {same_out}")
     print(f"  generations per seed: {gens['A']}")
+    print("  per-seed wall clock, median ms (A parent, B index-based):")
+    print("    seed |  A ms |  B ms | speedup | gens")
+    for s in a.seeds:
+        ma, mb = statistics.median(per["A"][s]), statistics.median(per["B"][s])
+        print(f"    {s:>4} | {ma*1000:5.0f} | {mb*1000:5.0f} | {ma/mb:6.2f}x | {gens['A'][s]}")
     return 0 if same_traj and same_out else 1
 
 

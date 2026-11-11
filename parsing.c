@@ -8,6 +8,11 @@ int NUM_TEAMS;
 int NUM_COURSES;
 int NUM_ENTRIES;
 
+/* Pointers to the tables that ENTRY indices refer to (see header/structs.h).
+ * Both are filled in by their parser below, which owns the static storage. */
+COURSE *COURSE_TABLE;
+ROOM *ROOM_TABLE;
+
 void validate_data() {
     int errnum;
     PROFESSOR *p;
@@ -111,6 +116,8 @@ ROOM * rooms() {
 
     // Close the filestream.
     fclose(inp);
+
+    ROOM_TABLE = dest;
 
     // Return the array containing informations from the filestream.
     return dest;
@@ -222,6 +229,8 @@ COURSE * courses() {
 
     // Close the filestream.
     fclose(inp);
+
+    COURSE_TABLE = dest;
 
     // Return the array containing informations from the filestream.
     return dest;

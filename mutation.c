@@ -1,7 +1,7 @@
 #include "header/structs.h"
 #include "header/functions.h"
 
-void mutation(SCHEDULE *child, ROOM *room) {
+void mutation(SCHEDULE *child) {
     int i;
     double mutprob, g;
 
@@ -16,7 +16,7 @@ void mutation(SCHEDULE *child, ROOM *room) {
 
             child->entry[i].day = rand_num(NUM_DAYS+1, 1);
             child->entry[i].hour = rand_num(NUM_HRS_DAY+1, 1);
-            child->entry[i].room = room[rand_num(NUM_ROOMS, 0)];
+            child->entry[i].room = rand_num(NUM_ROOMS, 0);
         }     
     }
 }
