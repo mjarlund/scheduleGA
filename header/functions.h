@@ -47,6 +47,17 @@ double randZeroToOne();
 
 // Calculators.
 void calc_fitness(SCHEDULE *schedule, int pop);
+void objective_check(void);
+void fitness_report(SCHEDULE *s);
+/* Components of one schedule, for tests and for the report. */
+void fitness_parts(SCHEDULE *s, int *clashes, int *type_bad, int *team_days,
+                   int *gap_hours, int *prof_days);
+/* The weights themselves, so a test or a report can recompute the score. */
+void objective_weights(long *hard_scale, long *w_room_type, int *w_team_day,
+                       int *w_team_gap, int *w_prof_day);
+
+// Rooms.
+int random_room_of_type(int type);
 
 // Selectors.
 SCHEDULE tournament_selection(SCHEDULE *p, int popsize);

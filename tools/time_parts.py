@@ -40,7 +40,7 @@ EXPORT_NEW = ('    fprintf(stderr, "TIME;%lld;%d\\n", _tf, generation - 1);\n'
               + EXPORT)
 
 
-def build(src_dir):
+def build(src_dir, cflags=()):
     tmp = tempfile.mkdtemp(prefix="sga-time-")
     for f in os.listdir(src_dir):
         if f.endswith(".c"):
@@ -63,7 +63,8 @@ def build(src_dir):
 
     os.symlink(os.path.join(ROOT, "data"), os.path.join(tmp, "data"))
     os.makedirs(os.path.join(tmp, "result"))
-    cc = ["cc", "-O2", "-std=c99", "-D_POSIX_C_SOURCE=199309L", "-o", "sga-time",
+    cc = ["cc", "-O2", "-std=c99", "-D_POSIX_C_SOURCE=199309L"] + list(cflags) + \
+         ["-o", "sga-time",
           "main.c", "fitness.c", "parsing.c", "initialize.c", "functions.c",
           "crossover.c", "mutation.c", "selection.c", "export.c"]
     subprocess.run(cc, cwd=tmp, check=True)
@@ -75,13 +76,22 @@ def main():
     ap.add_argument("--pop", type=int, default=50)
     ap.add_argument("--seeds", type=int, nargs="+", default=[1, 3])
     ap.add_argument("--runs", type=int, default=3)
+    ap.add_argument("--src", default=ROOT, help="tree to instrument (default: this one)")
+    ap.add_argument("--cflags", default="", help="extra compiler flags, e.g. -DSOFT_OBJECTIVE=0")
+    ap.add_argument("--env", default="", help="extra env assignments, k=v;k=v")
     a = ap.parse_args()
 
-    tmp = build(ROOT)
+    env_extra = {}
+    for kv in filter(None, a.env.split(";")):
+        k, v = kv.split("=", 1)
+        env_extra[k] = v
+
+    tmp = build(a.src, a.cflags.split())
     rows = []
     for r in range(a.runs):
         for s in a.seeds:
             env = dict(os.environ, SGA_SEED=str(s), LD_PRELOAD=SO)
+            env.update(env_extra)
             t0 = time.perf_counter()
             p = subprocess.run(["./sga-time"], cwd=tmp, input=f"{a.pop}\n",
                                capture_output=True, text=True, env=env, timeout=900)

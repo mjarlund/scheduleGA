@@ -53,7 +53,8 @@ struct ENTRY {
 };
 
 struct SCHEDULE {
-    int fitness;
+    int fitness;    /* the objective (see fitness.c); drives selection          */
+    int violations; /* entries a school would reject: clashes + wrong room type */
     ENTRY *entry;
 };
 
